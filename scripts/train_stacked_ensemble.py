@@ -401,7 +401,7 @@ def main():
     }, production_model_path)
     
     # Save feature columns for app compatibility (use encoded feature names)
-    encoded_feature_cols = X_train_encoded.columns.tolist()
+    encoded_feature_cols = X_train_enc.columns.tolist()
     feature_cols_path = production_dir / "feature_columns_latest.json"
     with open(feature_cols_path, 'w') as f:
         json.dump(encoded_feature_cols, f, indent=2)

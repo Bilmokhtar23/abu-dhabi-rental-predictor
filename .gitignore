@@ -33,9 +33,10 @@ env/
 *~
 
 # Data
+data/raw/*.csv
 *.csv
 !requirements.txt
-data/raw/*.csv
+!data/processed/*.csv
 data/processed/*.parquet
 data/features/*.parquet
 

@@ -42,8 +42,9 @@ data/features/*.parquet
 
 # Models
 *.pkl
-model_outputs/*/
 !model_outputs/v6.2_production/models/  # Keep production model
+!model_outputs/tuned/  # Keep tuned hyperparameters
+model_outputs/*/
 
 # MLflow
 mlruns/

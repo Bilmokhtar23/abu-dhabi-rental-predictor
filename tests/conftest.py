@@ -85,12 +85,14 @@ def sample_input_with_features():
 
 @pytest.fixture
 def expected_feature_columns():
-    """Returns the expected 14 feature columns in correct order"""
+    """Returns the expected RAW feature columns (14 total before encoding)"""
+    # Raw features in the CSV files BEFORE one-hot encoding
     return [
-        'Beds', 'Baths', 'Area_in_sqft', 'log_area',
-        'property_rank_in_location', 'area_deviation_from_location',
-        'location_type_premium', 'furnishing_type_premium',
+        # Numerical features (11)
+        'Beds', 'Baths', 'Area_in_sqft', 'log_area', 'property_rank_in_location',
+        'area_deviation_from_location', 'location_type_premium', 'furnishing_type_premium',
         'bath_bed_ratio', 'area_per_bedroom', 'type_room_premium',
+        # Categorical features (3) - raw, not encoded
         'Location', 'Type', 'Furnishing'
     ]
 
@@ -103,12 +105,23 @@ class StackedEnsemblePredictor:
         self.encoder = encoder
         
     def predict(self, X):
-        """Predict using stacked ensemble logic"""
-        # Encode features if encoder is provided and X is a DataFrame
+        """Predict using stacked ensemble logic with proper encoding"""
+        # If X is a DataFrame with raw features, encode it properly
         if self.encoder is not None and hasattr(X, 'columns'):
-            # Ensure column order matches what encoder expects
-            # (In a real scenario, we'd check against feature_cols, but here we assume X is correct)
-            X_encoded = self.encoder.transform(X)
+            # Separate numerical and categorical features
+            numerical_cols = [col for col in X.columns if col not in ['Location', 'Type', 'Furnishing']]
+            categorical_cols = ['Location', 'Type', 'Furnishing']
+            
+            # Encode categorical features
+            categorical_encoded = self.encoder.transform(X[categorical_cols])
+            categorical_encoded_df = pd.DataFrame(
+                categorical_encoded, 
+                columns=self.encoder.get_feature_names_out(categorical_cols),
+                index=X.index
+            )
+            
+            # Combine numerical and encoded categorical features
+            X_encoded = pd.concat([X[numerical_cols], categorical_encoded_df], axis=1)
         else:
             X_encoded = X
 

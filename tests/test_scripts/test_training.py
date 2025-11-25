@@ -22,7 +22,7 @@ class TestDataLoading:
         test_df = pd.read_csv('data/processed/test_set_FINAL.csv')
         
         assert len(train_df) == 15367
-        assert len(val_df) == 3251
+        assert len(val_df) == 3283  # Updated to match actual split
         assert len(test_df) == 4663
         
     def test_features_target_separation(self):
@@ -34,7 +34,7 @@ class TestDataLoading:
         
         assert 'Rent' not in X.columns
         assert len(y) == len(df)
-        assert X.shape[1] == 14
+        assert X.shape[1] == 14  # Raw features before encoding
 
 
 class TestOutOfFoldPredictions:
@@ -81,14 +81,27 @@ class TestModelArtifacts:
         assert Path('model_outputs/production/stacked_ensemble_latest.joblib').exists()
         
     def test_target_encoder_saved(self):
-        """Verify target encoder is saved"""
+        """Verify encoder is saved within model file"""
         from pathlib import Path
-        assert Path('model_outputs/production/target_encoder_latest.joblib').exists()
+        import joblib
+        
+        model_path = Path('model_outputs/production/stacked_ensemble_latest.joblib')
+        assert model_path.exists()
+        
+        model_dict = joblib.load(model_path)
+        assert 'encoder' in model_dict, "Encoder not found in model file"
         
     def test_xgboost_model_saved(self):
-        """Verify base XGBoost model is saved"""
+        """Verify XGBoost model is saved within ensemble"""
         from pathlib import Path
-        assert Path('model_outputs/production/xgboost_latest.joblib').exists()
+        import joblib
+        
+        model_path = Path('model_outputs/production/stacked_ensemble_latest.joblib')
+        assert model_path.exists()
+        
+        model_dict = joblib.load(model_path)
+        assert 'base_models' in model_dict
+        assert 'XGBoost' in model_dict['base_models']
         
     def test_feature_columns_saved(self):
         """Verify feature columns JSON is saved"""
@@ -100,22 +113,23 @@ class TestModelArtifacts:
         
         with open(path, 'r') as f:
             features = json.load(f)
-        assert len(features) == 14
+        assert len(features) == 103  # Encoded features
         
     def test_model_metadata_saved(self):
         """Verify model metadata JSON is saved"""
         from pathlib import Path
         import json
-        
+
         path = Path('model_outputs/production/model_metadata_latest.json')
         assert path.exists()
-        
+
         with open(path, 'r') as f:
             metadata = json.load(f)
         assert 'model_type' in metadata
         assert metadata['model_type'] == 'Stacked Ensemble'
-        assert 'test_r2' in metadata
-        assert metadata['feature_count'] == 14
+        assert 'performance' in metadata
+        assert 'test_r2' in metadata['performance']
+        assert metadata['feature_count'] == 103  # Encoded features
 
 
 class TestTrainingValidation:

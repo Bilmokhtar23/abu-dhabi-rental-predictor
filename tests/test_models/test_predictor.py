@@ -25,13 +25,14 @@ class TestModelLoading:
         assert production_model is not None
         
     def test_target_encoder_exists(self):
-        """Verify target encoder file exists"""
-        encoder_path = Path('model_outputs/production/target_encoder_latest.joblib')
-        assert encoder_path.exists(), "Target encoder file not found"
+        """Verify encoder is available (saved within model file)"""
+        model_path = Path('model_outputs/production/stacked_ensemble_latest.joblib')
+        model_dict = joblib.load(model_path)
+        assert 'encoder' in model_dict, "Encoder not found in model file"
         
-    def test_target_encoder_loads(self, target_encoder):
-        """Verify target encoder loads without errors"""
-        assert target_encoder is not None
+    def test_target_encoder_loads(self, production_model):
+        """Verify encoder loads without errors"""
+        assert production_model.encoder is not None
         
     def test_feature_columns_json_exists(self):
         """Verify feature columns JSON exists"""
@@ -146,9 +147,9 @@ class TestEdgeCases:
             'bath_bed_ratio': [1.0],  # 1 / (0 + 1)
             'area_per_bedroom': [450.0],  # 450 / (0 + 1)
             'type_room_premium': [0.8],
-            'Location': [1.0],  # Encoded value
-            'Type': [0.5],  # Encoded value
-            'Furnishing': [0.3]  # Encoded value
+            'Location': ['Khalifa City'],  # Proper categorical string
+            'Type': ['Apartment'],  # Proper categorical string
+            'Furnishing': ['Unfurnished']  # Proper categorical string
         })
         
         prediction = production_model.predict(studio_data)
@@ -171,9 +172,9 @@ class TestEdgeCases:
             'bath_bed_ratio': [8.0 / 8],  # 8 / (7 + 1)
             'area_per_bedroom': [8000.0 / 8],  # 8000 / (7 + 1)
             'type_room_premium': [1.5],
-            'Location': [1.5],  # Encoded value
-            'Type': [1.2],  # Encoded value
-            'Furnishing': [1.1]  # Encoded value
+            'Location': ['Yas Island'],  # Proper categorical string
+            'Type': ['Villa'],  # Proper categorical string
+            'Furnishing': ['Furnished']  # Proper categorical string
         })
         
         prediction = production_model.predict(villa_data)

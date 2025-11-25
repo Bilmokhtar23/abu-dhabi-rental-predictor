@@ -38,13 +38,13 @@ class TestDataIntegrity:
     """Test suite for data quality and integrity"""
     
     def test_row_counts_match_actual(self):
-        """Verify actual row counts (metadata has known discrepancy)"""
+        """Verify actual row counts match current data split"""
         train_df = pd.read_csv('data/processed/train_set_FINAL.csv')
         val_df = pd.read_csv('data/processed/val_set_FINAL.csv')
         test_df = pd.read_csv('data/processed/test_set_FINAL.csv')
         
         assert len(train_df) == 15367, f"Train set should have 15367 rows, got {len(train_df)}"
-        assert len(val_df) == 3251, f"Val set should have 3251 rows, got {len(val_df)}"
+        assert len(val_df) == 3283, f"Val set should have 3283 rows, got {len(val_df)}"
         assert len(test_df) == 4663, f"Test set should have 4663 rows, got {len(test_df)}"
         
     def test_feature_columns_are_complete(self, sample_train_data, expected_feature_columns):

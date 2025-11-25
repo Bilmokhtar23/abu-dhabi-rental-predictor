@@ -61,8 +61,8 @@ st.markdown("Get instant AI-powered rental price predictions for Abu Dhabi prope
 
 # Sidebar with basic info
 st.sidebar.header("Model Info")
-st.sidebar.metric("R² Score", "0.9107")
-st.sidebar.metric("MAE", "5,934 AED")
+st.sidebar.metric("R² Score", "0.9379")
+st.sidebar.metric("MAE", "5,521 AED")
 st.sidebar.metric("Properties", f"{len(df):,}")
 
 # Input form
@@ -178,7 +178,7 @@ if st.button("🔮 Predict Rental Price", type="primary"):
             st.metric("Monthly Rent", f"{prediction/12:,.0f} AED")
 
         with col3:
-            st.metric("Model Accuracy", "91.07%")
+            st.metric("Model Accuracy", "93.79%")
 
         # Comparison
         st.subheader("📊 Price Comparison")

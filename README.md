@@ -7,20 +7,20 @@ A machine learning system for predicting rental prices in Abu Dhabi. This projec
 ![Python](https://img.shields.io/badge/Python-3.11-blue.svg)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.28-FF4B4B.svg)
 ![XGBoost](https://img.shields.io/badge/XGBoost-2.0-green.svg)
-![R² Score](https://img.shields.io/badge/R²-91.1%25-blue.svg)
+![R² Score](https://img.shields.io/badge/R²-93.8%25-blue.svg)
 
 ---
 
 ## 🌟 Executive Summary
 
-This system analyzes over **23,000 properties** in Abu Dhabi to provide accurate rental valuations. By leveraging a **Stacked Ensemble** of XGBoost, LightGBM, and CatBoost with Ridge meta-learner, the model achieves a **91.1% R² score** on held-out test data with proper validation methodology.
+This system analyzes over **23,000 properties** in Abu Dhabi to provide accurate rental valuations. By leveraging a **Stacked Ensemble** of XGBoost, LightGBM, and CatBoost with Ridge meta-learner, the model achieves a **93.8% R² score** on held-out test data with proper validation methodology.
 
 ### Key Achievements
-- **🎯 Accuracy**: Test R² of 91.1%, explaining variance in rental prices across diverse property types
-- **📊 Precision**: Mean Absolute Error of 5,934 AED (RMSE: 31,310 AED)
+- **🎯 Accuracy**: Test R² of 93.8%, explaining variance in rental prices across diverse property types
+- **📊 Precision**: Mean Absolute Error of 5,521 AED (RMSE: 26,114 AED)
 - **🧠 Clean Methodology**: No data leakage, proper train/validation/test splits with stratification
 - **🏗️ Feature Engineering**: 14 carefully selected features (11 numeric + 3 categorical)
-- **🌐 Production App**: Fully functional Streamlit interface for real-time predictions
+- **🌐 Production App**: Streamlit interface for real-time predictions with price comparisons
 
 ---
 
@@ -28,26 +28,31 @@ This system analyzes over **23,000 properties** in Abu Dhabi to provide accurate
 
 ### Prerequisites
 - Python 3.11+
+- pip (latest version)
 
-### 1. Install Dependencies
+### Setup Steps
+
 ```bash
+# 1. Clone the repository
+git clone https://github.com/Bilmokhtar23/abu-dhabi-rental-predictor.git
+cd abu-dhabi-rental-predictor
+
+# 2. Install dependencies
 pip install -r requirements.txt
-```
 
-### 2. Train the Model (Optional - takes ~2-3 minutes)
-The processed data is included in the repository. Train the production model:
-
-```bash
+# 3. Train the model (optional - takes ~2-3 minutes)
 python scripts/train_stacked_ensemble.py
-```
 
-This creates the model files needed for predictions. The script will train a stacked ensemble of XGBoost, LightGBM, and CatBoost models, achieving ~94% R² accuracy on test data.
-
-### 3. Launch the Web Application
-```bash
+# 4. Launch the web app
 streamlit run app.py
+
+# 5. Run tests to verify setup
+pytest tests/ -v
 ```
+
 The application will open in your browser at `http://localhost:8501`.
+
+**For detailed reproducibility instructions, see [REPRODUCIBILITY.md](REPRODUCIBILITY.md).**
 
 ---
 
@@ -56,10 +61,10 @@ The application will open in your browser at `http://localhost:8501`.
 The repository includes processed datasets for immediate reproducibility:
 
 - **train_set_FINAL.csv**: 15,367 properties for model training
-- **val_set_FINAL.csv**: 3,251 properties for hyperparameter tuning
+- **val_set_FINAL.csv**: 3,283 properties for hyperparameter tuning
 - **test_set_FINAL.csv**: 4,663 properties for final evaluation
 
-Data includes 14 engineered features and achieves 93.79% R² with the stacked ensemble.
+Data includes 14 raw features (11 numeric + 3 categorical) that are encoded to 103 features for model training.
 
 ---
 
@@ -84,18 +89,9 @@ The project follows a production-ready ML pipeline:
 ## 📱 Web Application Features
 
 ### 🔮 Price Predictor
-*   **Instant Valuations**: Enter property details to get an immediate rental estimate.
-*   **Confidence Intervals**: See the upper and lower bounds of the prediction.
-*   **Market Comparison**: Compare the estimate against average rents for the location and property type.
-
-### 🗺️ Interactive Map
-*   **Geospatial Analysis**: Visualize property distributions across Abu Dhabi.
-*   **Heatmaps**: Identify premium and affordable zones instantly.
-
-### 📊 Analytics Dashboard
-*   **Trend Analysis**: Explore how size, room count, and furnishing status affect price.
-*   **Feature Importance**: See which factors (Location, Area, Type) drive the model's predictions.
-*   **Distribution Insights**: Understand rental price patterns across different property segments.
+*   **Instant Valuations**: Enter property details to get an immediate rental estimate
+*   **Market Comparison**: Compare predictions against location and property type averages
+*   **Clean Interface**: Simple, user-friendly Streamlit interface for quick valuations
 
 ---
 
@@ -110,7 +106,7 @@ Property finder/
 │   │   └── abudhabi_properties_cleaned.csv  # Raw dataset (23,313 properties)
 │   └── processed/
 │       ├── train_set_FINAL.csv     # Training set (15,367 properties)
-│       ├── val_set_FINAL.csv       # Validation set (3,251 properties)
+│       ├── val_set_FINAL.csv       # Validation set (3,283 properties)
 │       ├── test_set_FINAL.csv      # Test set (4,663 properties)
 │       └── *.json                  # Feature and split metadata
 ├── model_outputs/
@@ -135,17 +131,17 @@ Property finder/
 
 | Metric | Value | Description |
 |:-------|:------|:------------|
-| **R² Score** | **0.9107** | Explains 91.1% of rental price variance |
-| **MAE** | **5,934 AED** | Mean Absolute Error |
-| **RMSE** | **31,310 AED** | Root Mean Squared Error |
-| **Validation MAE** | **27,758 AED** | Validation set performance |
+| **R² Score** | **0.9379** | Explains 93.8% of rental price variance |
+| **MAE** | **5,521 AED** | Mean Absolute Error |
+| **RMSE** | **26,114 AED** | Root Mean Squared Error |
+| **Validation MAE** | **5,921 AED** | Validation set performance |
 
-*Performance measured on held-out test set of 4,663 properties (20% of dataset).* 
+*Performance measured on held-out test set of 4,663 properties (20% of dataset).*
 
 ### Model Details
-- **Training Data**: 15,367 properties (70% split)
-- **Validation Data**: 3,251 properties (15% split)
-- **Test Data**: 4,663 properties (15% split)
+- **Training Data**: 15,367 properties (66% split)
+- **Validation Data**: 3,283 properties (14% split)
+- **Test Data**: 4,663 properties (20% split)
 - **Features**: 14 total (11 numeric + 3 categorical)
 - **Training Date**: November 25, 2025
 - **Base Models**: XGBoost, LightGBM, CatBoost
@@ -166,6 +162,7 @@ Property finder/
 
 ## 📚 Additional Documentation
 
+- **[Reproducibility Guide](REPRODUCIBILITY.md)** - Detailed setup instructions and troubleshooting for external users
 - **[Development Journey](docs/DEVELOPMENT_JOURNEY.md)** - Complete narrative of model development, from initial experiments to production deployment
 - **[MLflow Training Guide](docs/MLFLOW_TRAINING_GUIDE.md)** - Guide for experiment tracking and model versioning
 

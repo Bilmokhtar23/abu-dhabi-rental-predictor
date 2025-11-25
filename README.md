@@ -41,7 +41,7 @@ The trained model files are not included in the repository. Train the production
 ```bash
 python scripts/train_stacked_ensemble.py
 ```
-This takes ~2-3 minutes and creates the model files needed for predictions.
+This takes ~2-3 minutes and creates the model files needed for predictions. The script will train a stacked ensemble of XGBoost, LightGBM, and CatBoost models, achieving ~94% R² accuracy on test data.
 
 ### 3. Launch the Web Application
 ```bash

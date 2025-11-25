@@ -16,7 +16,7 @@ warnings.filterwarnings('ignore')
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
 from sklearn.metrics import mean_absolute_error, r2_score, mean_squared_error
 from sklearn.linear_model import Ridge
-from category_encoders import TargetEncoder
+from sklearn.preprocessing import OneHotEncoder
 
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
@@ -81,22 +81,35 @@ def load_best_params():
 
 
 def prepare_features(X_train, X_val, X_test, y_train, feature_cols):
-    """Encode categorical features with improved strategy"""
-    
+    """Encode categorical features with OneHotEncoder"""
+
     categorical_cols = ['Location', 'Type', 'Furnishing']
-    
-    # Improved encoding (Issue #3 fix)
-    # Smoothing=10.0 prevents overfitting on rare categories
-    # handle_unknown='value' returns prior mean for unseen categories
-    encoder = TargetEncoder(
-        cols=categorical_cols,
-        smoothing=10.0,
-        handle_unknown='value',
-        handle_missing='value'
-    )
-    X_train_encoded = encoder.fit_transform(X_train, y_train)
-    X_val_encoded = encoder.transform(X_val)
-    X_test_encoded = encoder.transform(X_test)
+
+    # Use OneHotEncoder for categorical features
+    encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore', drop='first')
+    X_train_encoded = X_train.copy()
+    X_val_encoded = X_val.copy()
+    X_test_encoded = X_test.copy()
+
+    # Fit encoder on training data
+    encoded_train = encoder.fit_transform(X_train[categorical_cols])
+    encoded_train_df = pd.DataFrame(encoded_train, columns=encoder.get_feature_names_out(categorical_cols), index=X_train.index)
+
+    # Transform validation and test data
+    encoded_val = encoder.transform(X_val[categorical_cols])
+    encoded_val_df = pd.DataFrame(encoded_val, columns=encoder.get_feature_names_out(categorical_cols), index=X_val.index)
+
+    encoded_test = encoder.transform(X_test[categorical_cols])
+    encoded_test_df = pd.DataFrame(encoded_test, columns=encoder.get_feature_names_out(categorical_cols), index=X_test.index)
+
+    # Drop original categorical columns and add encoded ones
+    X_train_encoded = X_train_encoded.drop(categorical_cols, axis=1)
+    X_val_encoded = X_val_encoded.drop(categorical_cols, axis=1)
+    X_test_encoded = X_test_encoded.drop(categorical_cols, axis=1)
+
+    X_train_encoded = pd.concat([X_train_encoded, encoded_train_df], axis=1)
+    X_val_encoded = pd.concat([X_val_encoded, encoded_val_df], axis=1)
+    X_test_encoded = pd.concat([X_test_encoded, encoded_test_df], axis=1)
     
     return X_train_encoded, X_val_encoded, X_test_encoded, encoder
 

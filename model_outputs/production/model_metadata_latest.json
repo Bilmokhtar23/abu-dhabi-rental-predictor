@@ -1,0 +1,26 @@
+{
+  "timestamp": "20251125_134502",
+  "model_type": "Stacked Ensemble",
+  "base_models": [
+    "XGBoost",
+    "LightGBM",
+    "CatBoost"
+  ],
+  "meta_model": "Ridge",
+  "meta_alpha": 100.0,
+  "n_folds_meta": 5,
+  "feature_count": 103,
+  "performance": {
+    "val_mae": 5920.9314951605475,
+    "test_mae": 5521.109047028385,
+    "test_r2": 0.9379060975207463,
+    "test_rmse": 26113.698821276867
+  },
+  "improvement_over_best_base": {
+    "best_base_model": "CatBoost",
+    "best_base_mae": 5456.119626900789,
+    "ensemble_mae": 5521.109047028385,
+    "improvement_aed": -64.98942012759653,
+    "improvement_pct": -1.1911289445922968
+  }
+}

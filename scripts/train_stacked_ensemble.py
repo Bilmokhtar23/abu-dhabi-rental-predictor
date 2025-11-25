@@ -385,6 +385,26 @@ def main():
         'test_rmse': test_rmse
     }, ensemble_path)
     
+    # Also save to production directory for immediate app compatibility
+    production_dir = Path("model_outputs/production")
+    production_dir.mkdir(parents=True, exist_ok=True)
+    production_model_path = production_dir / "stacked_ensemble_latest.joblib"
+    joblib.dump({
+        'base_models': base_models,
+        'meta_model': meta_model,
+        'encoder': encoder,
+        'meta_alpha': best_alpha,
+        'val_mae': val_mae,
+        'test_mae': test_mae,
+        'test_r2': test_r2,
+        'test_rmse': test_rmse
+    }, production_model_path)
+    
+    # Save feature columns for app compatibility
+    feature_cols_path = production_dir / "feature_columns_latest.json"
+    with open(feature_cols_path, 'w') as f:
+        json.dump(feature_cols, f, indent=2)
+    
     # Save metadata
     metadata = {
         'timestamp': timestamp,
@@ -415,6 +435,8 @@ def main():
     print(f"   {comparison_path}")
     print(f"   {ensemble_path}")
     print(f"   {metadata_path}")
+    print(f"   {production_model_path} (for app compatibility)")
+    print(f"   {feature_cols_path} (for app compatibility)")
     
     # =========================================================================
     # SUMMARY

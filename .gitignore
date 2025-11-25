@@ -78,3 +78,6 @@ htmlcov/
 # Data files - EXCLUDE raw data, INCLUDE processed for reproducibility
 data/raw/
 !data/processed/
+
+# Local backups (not for GitHub)
+.archive/

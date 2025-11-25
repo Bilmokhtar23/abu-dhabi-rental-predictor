@@ -1,0 +1,83 @@
+# Configuration for Abu Dhabi Rental Price Predictor
+# Environment-specific settings
+
+# Model Configuration
+model:
+  version: "production"
+  n_features: 14
+  target_column: "Rent"
+  train_size: 0.70
+  val_size: 0.15
+  test_size: 0.15
+  random_state: 42
+
+# Data Configuration
+data:
+  raw_path: "data/raw/abudhabi_properties_cleaned.csv"
+  processed_path: "data/processed"
+  min_price: 25000
+  max_price: 450000
+  min_size: 250
+  max_size: 5000
+  min_price_per_sqft: 40
+  max_price_per_sqft: 300
+
+# Feature Engineering
+features:
+  numeric_features:
+    - "Beds"
+    - "Baths"
+    - "Area_in_sqft"
+    - "log_area"
+    - "property_rank_in_location"
+    - "area_deviation_from_location"
+    - "location_type_premium"
+    - "furnishing_type_premium"
+    - "bath_bed_ratio"
+    - "area_per_bedroom"
+    - "type_room_premium"
+  categorical_features:
+    - "Location"
+    - "Type"
+    - "Furnishing"
+  target_encoder_smoothing: 10.0
+
+# Training Configuration
+training:
+  cv_folds: 5
+  hyperparameter_tuning: true
+  early_stopping: true
+  max_iterations: 1000
+
+# API Configuration
+api:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  timeout: 30
+
+# Web App Configuration
+webapp:
+  title: "Abu Dhabi Rental Price Predictor"
+  theme: "light"
+  max_batch_size: 1000
+
+# Monitoring Configuration
+monitoring:
+  enable_drift_detection: true
+  drift_threshold: 0.1
+  alert_email: "alerts@company.com"
+  log_level: "INFO"
+
+# Database Configuration (for future use)
+database:
+  type: "sqlite"
+  path: "data/app.db"
+
+# Security Configuration
+security:
+  api_key_required: false
+  rate_limit: 100  # requests per minute
+  cors_origins:
+    - "http://localhost:8501"
+    - "https://your-domain.com"

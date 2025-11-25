@@ -13,7 +13,7 @@ A machine learning system for predicting rental prices in Abu Dhabi. This projec
 
 ## 🌟 Executive Summary
 
-This system analyzes over **23,000 properties** in Abu Dhabi to provide accurate rental valuations. By leveraging a **Stacked Ensemble** of XGBoost, LightGBM, and CatBoost with Ridge meta-learner, the model achieves a **93.8% R² score** on held-out test data with proper validation methodology.
+This system analyzes over **23,313 properties** in Abu Dhabi to provide accurate rental valuations. By leveraging a **Stacked Ensemble** of XGBoost, LightGBM, and CatBoost with Ridge meta-learner, the model achieves a **93.8% R² score** on held-out test data with proper validation methodology.
 
 ### Key Achievements
 - **🎯 Accuracy**: Test R² of 93.8%, explaining variance in rental prices across diverse property types
@@ -79,7 +79,8 @@ The project follows a production-ready ML pipeline:
     *   **Derived Features**: Log-transformed area, bath-to-bed ratios, area per bedroom
     *   **Target Encoding**: Smooth categorical encoding (Location, Type, Furnishing) with 10.0 smoothing factor to prevent overfitting
 4.  **Model Training**:
-    *   **Base Models**: XGBoost, LightGBM, CatBoost (individually tuned with hyperparameter optimization)
+    *   **Hyperparameter Tuning**: Grid search optimization for XGBoost, LightGBM, CatBoost using validation set
+    *   **Base Models**: XGBoost, LightGBM, CatBoost (individually tuned with 5-fold CV)
     *   **Meta-Features**: Out-of-fold predictions using 5-fold cross-validation to prevent leakage
     *   **Meta Learner**: Ridge Regression (alpha=100.0) combines base model outputs
 5.  **Deployment**: Streamlit app loads production ensemble artifacts for real-time inference.
@@ -127,14 +128,48 @@ Property finder/
 
 ---
 
-## 📈 Model Performance
+## 📊 Model Performance Insights
 
+### Overall Performance
 | Metric | Value | Description |
 |:-------|:------|:------------|
 | **R² Score** | **0.9379** | Explains 93.8% of rental price variance |
 | **MAE** | **5,521 AED** | Mean Absolute Error |
 | **RMSE** | **26,114 AED** | Root Mean Squared Error |
 | **Validation MAE** | **5,921 AED** | Validation set performance |
+
+### Performance by Property Type
+The model demonstrates varying performance across different property types:
+
+| Property Type | Sample Size | MAE (AED) | R² Score | Notes |
+|:--------------|:------------|:----------|:---------|:------|
+| **Apartment** | 3,550 | 2,665 | 0.981 | Excellent performance on most common type |
+| **Villa** | 907 | 14,948 | 0.902 | Good performance but higher variance |
+| **Townhouse** | 169 | 9,677 | 0.775 | Moderate performance |
+| **Penthouse** | 18 | 18,461 | 0.857 | Limited sample size |
+| **Villa Compound** | 16 | 34,233 | -0.100 | Poor performance, needs more data |
+
+### Performance by Location (Top 10)
+Model accuracy varies significantly by location, likely due to market dynamics and data availability:
+
+| Location | Sample Size | MAE (AED) | R² Score | Performance |
+|:---------|:------------|:----------|:---------|:------------|
+| **Al Reem Island** | 747 | 1,398 | 0.991 | Outstanding |
+| **Al Raha Beach** | 371 | 2,409 | 0.991 | Excellent |
+| **Corniche Area** | 154 | 2,744 | 0.990 | Excellent |
+| **Yas Island** | 225 | 3,242 | 0.995 | Excellent |
+| **Mohammed Bin Zayed City** | 391 | 3,630 | 0.929 | Very Good |
+| **Madinat Al Riyadh** | 156 | 4,000 | 0.990 | Excellent |
+| **Khalifa City** | 554 | 5,246 | 0.887 | Good |
+| **Al Shamkha** | 137 | 5,783 | 0.759 | Moderate |
+| **Al Khalidiyah** | 169 | 7,286 | 0.414 | Poor |
+| **Saadiyat Island** | 141 | 11,092 | 0.974 | Very Good |
+
+### Key Insights & Considerations
+- **Best Performance**: Apartments and premium locations (Al Reem Island, Yas Island)
+- **Challenges**: Villas show higher prediction errors; some locations have limited training data
+- **Data Quality**: Performance correlates with sample size and market maturity
+- **Future Improvements**: Additional features for villa-specific characteristics, more data for underrepresented locations
 
 *Performance measured on held-out test set of 4,663 properties (20% of dataset).*
 
@@ -151,12 +186,12 @@ Property finder/
 
 ## 🛠️ Technologies Used
 
-*   **Core**: Python 3.11, Pandas, NumPy
-*   **Machine Learning**: XGBoost, LightGBM, CatBoost, Scikit-Learn, Category Encoders
-*   **Visualization**: Plotly Express, Seaborn, Matplotlib
-*   **Web Framework**: Streamlit, Streamlit-Folium
-*   **Geospatial**: Folium
-*   **Utilities**: Joblib (model serialization)
+*   **Core**: Python 3.11, Pandas, NumPy, Scikit-learn
+*   **Machine Learning**: XGBoost, LightGBM, CatBoost, Category Encoders
+*   **Web Framework**: Streamlit
+*   **Geospatial**: Folium (for future map features)
+*   **Model Persistence**: Joblib
+*   **Development**: pytest, black (code quality)
 
 ---
 

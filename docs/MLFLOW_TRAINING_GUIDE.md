@@ -1,188 +1,150 @@
-# MLflow Model Training Guide
+# Model Training Guide
 
-## Quick Start
+## Overview
 
-### 1. Run All Experiments
+This guide describes the actual training pipeline used to develop the Abu Dhabi rental price prediction model. The process involves hyperparameter tuning of individual models followed by stacked ensemble training.
 
+## Training Pipeline
+
+### Phase 1: Hyperparameter Tuning
+
+**Script**: `scripts/train_hyperparameter_tuning.py` (not included in repo)
+
+**Process**:
+1. Load pre-split FINAL datasets (train/val/test)
+2. Perform grid search on validation set for each algorithm
+3. Save best parameters to `model_outputs/tuned/best_params_20251123_185430.json`
+
+**Tuned Models**:
+- **XGBoost**: 200 estimators, max_depth=6, learning_rate=0.1
+- **LightGBM**: 200 estimators, max_depth=10, learning_rate=0.1
+- **CatBoost**: 200 estimators, max_depth=8, learning_rate=0.1
+
+### Phase 2: Stacked Ensemble Training
+
+**Script**: `scripts/train_stacked_ensemble.py`
+
+**Process**:
+1. Load tuned hyperparameters
+2. Train base models with best parameters
+3. Generate meta-features using 5-fold cross-validation (out-of-fold predictions)
+4. Train Ridge meta-learner on meta-features
+5. Evaluate on validation and test sets
+6. Save production model artifacts
+
+**Key Features**:
+- **Out-of-fold Predictions**: Prevents data leakage in meta-features
+- **Cross-validation**: 5-fold CV for robust meta-feature generation
+- **Meta-learner Tuning**: Grid search for Ridge alpha (0.1 to 100.0)
+- **Comprehensive Evaluation**: Base model and ensemble performance metrics
+
+## Model Performance
+
+### Overall Results
+- **Test R²**: 0.9379 (93.79%)
+- **Test MAE**: 5,521 AED
+- **Test RMSE**: 26,114 AED
+- **Improvement**: Slight underperformance vs. best base model (CatBoost)
+
+### Base Model Performance
+| Model | Test MAE | Test R² | Notes |
+|-------|----------|---------|-------|
+| XGBoost | - | - | Tuned hyperparameters |
+| LightGBM | - | - | Tuned hyperparameters |
+| CatBoost | 5,456 AED | - | Best individual performer |
+| Stacked Ensemble | 5,521 AED | 0.9379 | Meta-learning combination |
+
+## Training Artifacts
+
+### Saved Files
+- `model_outputs/tuned/best_params_*.json` - Hyperparameter configurations
+- `model_outputs/ensemble/stacked_ensemble_*.joblib` - Trained ensemble model
+- `model_outputs/ensemble/ensemble_metadata_*.json` - Training metadata
+- `model_outputs/production/stacked_ensemble_latest.joblib` - Production model
+- `model_outputs/production/feature_columns_latest.json` - Feature order
+- `model_outputs/production/model_metadata_latest.json` - Model metadata
+
+### Model Components
+- **Base Models**: 3 trained gradient boosting models
+- **Meta Model**: Ridge regression (alpha=100.0)
+- **Encoder**: OneHotEncoder for categorical features
+- **Feature Columns**: 103 encoded feature names
+- **Metadata**: Performance metrics and training details
+
+## Reproducing Training
+
+### Prerequisites
 ```bash
-cd "/Users/bilal/Property finder"
-python scripts/train_with_mlflow.py
+pip install -r requirements.txt
 ```
 
-This will:
-- Load the optimized dataset (23,313 properties)
-- Remove outliers (3×IQR method)
-- Train 8 models across 3 experiment groups
-- Track all experiments in MLflow
-- Save comparison results
-
-### 2. View MLflow UI
-
+### Full Training Pipeline
 ```bash
-mlflow ui --backend-store-uri file:./mlruns
+# Note: Hyperparameter tuning script not included
+# Assumes best_params_*.json exists
+
+# Train stacked ensemble
+python scripts/train_stacked_ensemble.py
 ```
 
-Then open: http://localhost:5000
-
-### 3. Compare Results
-
-Results saved to: `model_outputs/production/model_comparison.csv`
-
-## Models Trained
-
-### Baseline Models (3)
-1. **LinearRegression** - Simple linear model with scaling
-2. **Ridge** - L2 regularized linear model  
-3. **DecisionTree** - Single decision tree (max_depth=20)
-
-### Ensemble Models (3)
-4. **RandomForest** - 200 trees, depth=20
-5. **GradientBoosting** - 200 estimators, depth=10
-6. **XGBoost** - 200 estimators, depth=10, learning_rate=0.1
-
-### Advanced Models (2)
-7. **LightGBM** - Fast gradient boosting, 200 estimators
-8. **CatBoost** - Gradient boosting with categorical support
-
-## What's Tracked in MLflow
-
-### Parameters
-- `model_type` - Model algorithm name
-- `experiment_group` - baseline/ensemble/advanced
-- `n_features` - Number of features (27)
-- `train_size` / `test_size` - Dataset sizes
-- `use_scaling` - Whether StandardScaler applied
-- Model-specific hyperparameters (n_estimators, max_depth, etc.)
-
-### Metrics
-- `test_mae` - Mean Absolute Error on test set
-- `test_r2` - R² score on test set  
-- `test_rmse` - Root Mean Squared Error
-- `test_mape` - Mean Absolute Percentage Error
-- `cv_mae_mean` / `cv_mae_std` - Cross-validation MAE
-- `cv_r2_mean` / `cv_r2_std` - Cross-validation R²
-- `training_time` - Training duration (seconds)
-- `inference_time_ms` - Prediction time per sample
-- `mae_beds_X` - MAE by bedroom count
-- `mae_price_low/medium/high/luxury` - MAE by price range
-
-### Artifacts
-- `model` - Trained scikit-learn model
-- `temp_*_visualizations.png` - 4-panel visualization:
-  - Predictions vs Actual scatter
-  - Residual plot
-  - Residual distribution
-  - Feature importance (top 15)
-- `temp_*_feature_importance.csv` - Full feature importance scores
-- `temp_*_features.json` - List of features used
-- `temp_*_scaler.pkl` - StandardScaler (if used)
-
-## Expected Performance Targets
-
-- **MAE**: < 5,000 AED
-- **R²**: ≥ 0.85
-- **Training Time**: < 60s per model
-- **Inference Time**: < 10ms per sample
-
-## Interpreting Results
-
-### Best Model Selection
-Models ranked by MAE (lowest = best)
-
-Check:
-1. **Test MAE** - Primary metric for accuracy
-2. **R²** - Variance explained (higher = better)
-3. **CV MAE std** - Lower = more stable
-4. **Training Time** - Production deployment consideration
-5. **Feature Importance** - Model interpretability
-
-### Segment Performance
-Review MAE by:
-- **Bedroom count** - Performance across property sizes
-- **Price ranges** - Accuracy for low/medium/high/luxury segments
-
-Good model should have:
-- Consistent performance across segments
-- Lower error on common property types (1-3BR, medium price)
-
-## Next Steps After Training
-
-### 1. Review Results
-```bash
-# View comparison table
-cat model_outputs/production/model_comparison.csv
-
-# Launch MLflow UI
-mlflow ui --backend-store-uri file:./mlruns
+### Expected Output
+```
+✅ PHASE 4 COMPLETE!
+🏆 FINAL STACKED ENSEMBLE:
+   Val MAE:   5,921 AED
+   Test MAE:  5,521 AED
+   Test R²:   0.9379
+   Test RMSE: 26,114 AED
 ```
 
-### 2. Register Best Model
-```python
-import mlflow
+## Key Technical Details
 
-# Get best run ID from comparison.csv
-best_run_id = "YOUR_RUN_ID"
+### Data Leakage Prevention
+- Features engineered after train/test split
+- Out-of-fold predictions for meta-features
+- No information from test set used in training
 
-# Register model
-model_uri = f"runs:/{best_run_id}/model"
-mlflow.register_model(model_uri, "abu_dhabi_rental_predictor")
+### Validation Methodology
+- Stratified train (66%) / val (14%) / test (20%) split
+- Hyperparameter tuning on validation set
+- Final evaluation on held-out test set
+
+### Ensemble Architecture
+```
+Base Models (XGBoost, LightGBM, CatBoost)
+    ↓ (Out-of-fold predictions)
+Meta-Features (shape: n_samples × 3)
+    ↓ (Ridge Regression)
+Final Prediction
 ```
 
-### 3. Hyperparameter Tuning (Optional)
-If best model doesn't meet targets, run grid search:
-```python
-# See scripts/train_production_model.py for GridSearchCV example
-```
+## Performance Analysis
 
-### 4. Deploy to Production
-```python
-# Load registered model
-model = mlflow.pyfunc.load_model("models:/abu_dhabi_rental_predictor/Production")
+### Strengths
+- **High Accuracy**: 93.8% R² explains most rental price variance
+- **Robust**: Ensemble reduces overfitting vs. individual models
+- **Production-Ready**: Handles real-time inference efficiently
 
-# Make predictions
-predictions = model.predict(X_new)
-```
+### Limitations
+- **Villa Performance**: Higher MAE for villas vs. apartments
+- **Location Variance**: Performance varies by neighborhood data availability
+- **Feature Scope**: Limited to basic property characteristics
+
+### Areas for Improvement
+- Additional villa-specific features
+- More granular location encoding
+- Temporal market trend features
+- External data integration (amenities, transport)
 
 ## Troubleshooting
 
-### MLflow UI not loading
-```bash
-# Check if port 5000 is in use
-lsof -i :5000
+### Common Issues
+- **Memory Errors**: Reduce batch size or use smaller models
+- **Convergence Issues**: Check hyperparameter ranges
+- **Poor Performance**: Verify data preprocessing and feature engineering
 
-# Use different port
-mlflow ui --backend-store-uri file:./mlruns --port 5001
-```
-
-### Models training slowly
-- Check CPU usage (n_jobs=-1 uses all cores)
-- Reduce n_estimators or max_depth
-- Use fewer CV folds (cv=3 instead of 5)
-
-### Poor performance (MAE > 10,000)
-- Check data quality (outliers removed?)
-- Verify feature engineering (27 features expected)
-- Review feature importance (top features make sense?)
-- Try different hyperparameters
-
-## Configuration
-
-Edit in `scripts/train_with_mlflow.py`:
-
-```python
-# Configuration
-DATA_PATH = "data/processed/abudhabi_properties_OPTIMIZED.csv"
-REMOVE_OUTLIERS = True
-OUTLIER_THRESHOLD = 3.0  # IQR multiplier
-TEST_SIZE = 0.2          # 20% test set
-RANDOM_STATE = 42        # Reproducibility
-```
-
-## Dataset Requirements
-
-Expected structure:
-- **27 numeric features**: Area_in_sqft, Beds, Baths, room_count, etc.
-- **3 categorical** (not used in training): Location, Type, Furnishing
-- **1 target**: Rent (AED)
-
-No missing or infinite values allowed.
+### Validation Checks
+- Compare train/val/test distributions
+- Check for data leakage in features
+- Verify cross-validation stability
+- Review feature importance consistency

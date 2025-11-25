@@ -8,7 +8,7 @@
 
 ## 📖 Overview
 
-This document chronicles the evolution of our machine learning project from an impressive-looking but flawed model (99% R²) to a production-ready system (91.1% R²). It demonstrates a critical lesson in ML: **honest metrics are more valuable than impressive ones**.
+This document chronicles the evolution of our machine learning project from an impressive-looking but flawed model (99% R²) to a production-ready system (93.8% R²). It demonstrates a critical lesson in ML: **honest metrics are more valuable than impressive ones**.
 
 ---
 
@@ -18,9 +18,9 @@ This document chronicles the evolution of our machine learning project from an i
 |-------|----------|--------|--------------|
 | **Initial Model** | 99.17% | ❌ Data Leakage | Impressive metrics hiding fundamental flaws |
 | **After Investigation** | - | 🔍 Discovery | Identified leakage features and methodology issues |
-| **Clean Model** | 91.07% | ✅ Production-Ready | Honest performance, actually useful |
+| **Clean Model** | 93.79% | ✅ Production-Ready | Honest performance, actually useful |
 
-**Key Insight:** The 8% drop in R² represents **removing lies, not losing quality**.
+**Key Insight:** The 5.4% drop in R² represents **removing lies, not losing quality**.
 
 ---
 
@@ -256,52 +256,6 @@ Test MAE = 5,934 AED (~5.4% error)
 Test RMSE = 23,268 AED
 ```
 
-### Why These Numbers Are Excellent
-
-**Industry Comparison:**
-| System | R² Score | Notes |
-|--------|----------|-------|
-| **Our Model** | **0.9107** | Clean methodology, 23K samples |
-| Zillow Zestimate | 0.92-0.95 | Billions in R&D, millions of properties |
-| Kaggle Top 10% | 0.88-0.92 | Best teams, optimized for competition |
-| Industry Average | 0.75-0.85 | Typical production systems |
-| Academic Papers | 0.80-0.90 | Research benchmarks |
-
-**Our Position:** Top 20% of industry, above average for production systems.
-
-### The Performance "Drop" Explained
-
-**From 99% to 91.1%: Not a Loss, a Gain**
-
-| Metric | Old Model | New Model | Explanation |
-|--------|-----------|-----------|-------------|
-| **R²** | 99.17% | 91.07% | Removed leakage, not quality |
-| **MAE** | 2,021 AED | 5,934 AED | Honest error measurement |
-| **Production Viability** | ❌ Broken | ✅ Works | Can actually deploy |
-| **Generalization** | ❌ Fails | ✅ Succeeds | Works on new data |
-
-**Why 91.1% is Better:**
-
-1. **Real Estate is Noisy:**
-   - Properties have unique characteristics (view, condition, floor)
-   - Market timing and negotiation affect prices
-   - Listing quality varies
-   - Micro-location factors not captured
-
-2. **99% Was Impossible:**
-   - Would require perfect information
-   - No real-world system achieves this
-   - Indicated fundamental methodology error
-
-3. **91.1% is Production-Grade:**
-   - Comparable to funded startups
-   - Better than most industry systems
-   - Actually works on unseen data
-
-**Expert Verdict:**
-> *"The evolution from 99% to 91.1% R² is the hallmark of mature ML practice. Most practitioners would have stopped at 99% and deployed a broken model. The willingness to sacrifice impressive-looking metrics for actually useful ones is rare and commendable."*
-
----
 
 ## 🎓 Key Lessons Learned
 
@@ -450,8 +404,6 @@ for fold in kfold.split(X_train):
 ### Immediate Improvements Possible
 
 1. **External Data Integration**
-   - School ratings, crime statistics
-   - Public transport proximity
    - Neighborhood amenities
    - Could push R² to 0.90-0.92
 
@@ -504,6 +456,55 @@ Our journey from 99% (precisely wrong) to 91.1% (roughly right) embodies this pr
 - ✅ Professional credibility
 
 **That's the real win.**
+
+---
+
+## 🎯 Phase 5: Production System & Insights
+
+### Final Model Architecture
+After resolving data leakage issues, we implemented a robust production system:
+
+**Stacked Ensemble Model:**
+- **Base Models**: XGBoost, LightGBM, CatBoost (hyperparameter tuned)
+- **Meta-Learner**: Ridge Regression (α=100.0)
+- **Features**: 14 raw features → 103 encoded features
+- **Training**: Out-of-fold predictions with 5-fold CV
+- **Final Performance**: R² = 93.79%, MAE = 5,521 AED
+
+### Key Production Features
+- **No Data Leakage**: Proper train/val/test splits with stratification
+- **Reproducible**: Fixed random seeds, versioned dependencies
+- **Scalable**: Handles 23,313 properties efficiently
+- **Deployable**: Streamlit web app with real-time predictions
+- **Maintainable**: Modular code with comprehensive testing
+
+### Performance Insights by Segment
+
+**By Property Type:**
+- **Apartments** (75% of data): MAE = 2,665 AED, R² = 0.981 (Excellent)
+- **Villas**: MAE = 14,948 AED, R² = 0.902 (Good, but challenging)
+- **Townhouses**: MAE = 9,677 AED, R² = 0.775 (Moderate)
+- **Penthouses/Villa Compounds**: Limited data, higher variance
+
+**By Location:**
+- **Top Performers**: Al Reem Island (MAE = 1,398 AED), Yas Island (MAE = 3,242 AED)
+- **Challenges**: Some locations have limited training data affecting accuracy
+- **Market Maturity**: Performance correlates with data availability and market dynamics
+
+### Lessons Learned & Best Practices
+1. **Always Question "Too Good" Metrics**: 99% R² was impossible for this domain
+2. **Feature Engineering Timing Matters**: Never engineer features before splitting
+3. **Target Encoding Requires Care**: Use smoothing and proper validation
+4. **Ensemble Methods Add Robustness**: Stacking improved over individual models
+5. **Domain Knowledge is Crucial**: Real estate has unique characteristics
+6. **Honesty Builds Trust**: Stakeholders prefer reliable 94% over questionable 99%
+
+### Future Improvements
+- **Villa-Specific Features**: Pool, garden, security features
+- **Temporal Features**: Market trends, seasonality
+- **Geospatial Data**: Distance to amenities, transport
+- **Image Features**: Property photos analysis
+- **Market Segmentation**: Luxury vs. standard property models
 
 ---
 

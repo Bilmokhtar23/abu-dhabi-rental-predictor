@@ -26,27 +26,28 @@ This system analyzes over **23,000 properties** in Abu Dhabi to provide accurate
 
 ## 🚀 Quick Start
 
-### 1. Installation
-Ensure you have Python 3.10+ installed.
+### Prerequisites
+- Python 3.11+
+- All dependencies from `requirements.txt`
 
+### 1. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Launch the Web Application
-```bash
-streamlit run app.py
-```
-The application will open in your browser at `http://localhost:8501`.
-
-### 3. Retrain the Model (Optional)
-To reproduce the production model from scratch:
+### 2. Train the Model
+The trained model files are not included in the repository. Train the production model first:
 
 ```bash
 python scripts/train_stacked_ensemble.py
 ```
+This takes ~2-3 minutes and creates the model files needed for predictions.
 
-This will train the stacked ensemble on the processed datasets and save artifacts to `model_outputs/production/`.
+### 3. Launch the Web Application
+```bash
+streamlit run app.py
+```
+The application will open in your browser at `http://localhost:8501`.
 
 ---
 

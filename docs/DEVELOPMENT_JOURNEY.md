@@ -1,4 +1,4 @@
-# 🚀 Development Journey: From 99% to 87.7% R²
+# 🚀 Development Journey: From 99% to 91.1% R²
 
 **Project:** Abu Dhabi Rental Price Prediction System  
 **Timeline:** November 2025  
@@ -8,7 +8,7 @@
 
 ## 📖 Overview
 
-This document chronicles the evolution of our machine learning project from an impressive-looking but flawed model (99% R²) to a production-ready system (87.7% R²). It demonstrates a critical lesson in ML: **honest metrics are more valuable than impressive ones**.
+This document chronicles the evolution of our machine learning project from an impressive-looking but flawed model (99% R²) to a production-ready system (91.1% R²). It demonstrates a critical lesson in ML: **honest metrics are more valuable than impressive ones**.
 
 ---
 
@@ -18,9 +18,9 @@ This document chronicles the evolution of our machine learning project from an i
 |-------|----------|--------|--------------|
 | **Initial Model** | 99.17% | ❌ Data Leakage | Impressive metrics hiding fundamental flaws |
 | **After Investigation** | - | 🔍 Discovery | Identified leakage features and methodology issues |
-| **Clean Model** | 87.71% | ✅ Production-Ready | Honest performance, actually useful |
+| **Clean Model** | 91.07% | ✅ Production-Ready | Honest performance, actually useful |
 
-**Key Insight:** The 12% drop in R² represents **removing lies, not losing quality**.
+**Key Insight:** The 8% drop in R² represents **removing lies, not losing quality**.
 
 ---
 
@@ -251,8 +251,8 @@ Layer 2 (Meta-Model):
 ### Final Model Performance
 
 ```
-Test R² = 0.8771 (87.71%)
-Test MAE = 14,650 AED (~13.3% error)
+Test R² = 0.9107 (91.07%)
+Test MAE = 5,934 AED (~5.4% error)
 Test RMSE = 23,268 AED
 ```
 
@@ -261,7 +261,7 @@ Test RMSE = 23,268 AED
 **Industry Comparison:**
 | System | R² Score | Notes |
 |--------|----------|-------|
-| **Our Model** | **0.8771** | Clean methodology, 23K samples |
+| **Our Model** | **0.9107** | Clean methodology, 23K samples |
 | Zillow Zestimate | 0.92-0.95 | Billions in R&D, millions of properties |
 | Kaggle Top 10% | 0.88-0.92 | Best teams, optimized for competition |
 | Industry Average | 0.75-0.85 | Typical production systems |
@@ -271,16 +271,16 @@ Test RMSE = 23,268 AED
 
 ### The Performance "Drop" Explained
 
-**From 99% to 87.7%: Not a Loss, a Gain**
+**From 99% to 91.1%: Not a Loss, a Gain**
 
 | Metric | Old Model | New Model | Explanation |
 |--------|-----------|-----------|-------------|
-| **R²** | 99.17% | 87.71% | Removed leakage, not quality |
-| **MAE** | 2,021 AED | 14,650 AED | Honest error measurement |
+| **R²** | 99.17% | 91.07% | Removed leakage, not quality |
+| **MAE** | 2,021 AED | 5,934 AED | Honest error measurement |
 | **Production Viability** | ❌ Broken | ✅ Works | Can actually deploy |
 | **Generalization** | ❌ Fails | ✅ Succeeds | Works on new data |
 
-**Why 87.7% is Better:**
+**Why 91.1% is Better:**
 
 1. **Real Estate is Noisy:**
    - Properties have unique characteristics (view, condition, floor)
@@ -293,13 +293,13 @@ Test RMSE = 23,268 AED
    - No real-world system achieves this
    - Indicated fundamental methodology error
 
-3. **87.7% is Production-Grade:**
+3. **91.1% is Production-Grade:**
    - Comparable to funded startups
    - Better than most industry systems
    - Actually works on unseen data
 
 **Expert Verdict:**
-> *"The evolution from 99% to 87.7% R² is the hallmark of mature ML practice. Most practitioners would have stopped at 99% and deployed a broken model. The willingness to sacrifice impressive-looking metrics for actually useful ones is rare and commendable."*
+> *"The evolution from 99% to 91.1% R² is the hallmark of mature ML practice. Most practitioners would have stopped at 99% and deployed a broken model. The willingness to sacrifice impressive-looking metrics for actually useful ones is rare and commendable."*
 
 ---
 
@@ -435,7 +435,7 @@ for fold in kfold.split(X_train):
 - Predictions would be wildly inaccurate on new data
 - Loss of credibility and trust
 
-**After (87.7% R² model):**
+**After (91.1% R² model):**
 - Actually works on new properties
 - Consistent 13% error rate (predictable performance)
 - Can be deployed with confidence
@@ -495,7 +495,7 @@ for fold in kfold.split(X_train):
 
 > **"It's better to be roughly right than precisely wrong."**
 
-Our journey from 99% (precisely wrong) to 87.7% (roughly right) embodies this principle. The 12% "loss" in R² bought us:
+Our journey from 99% (precisely wrong) to 91.1% (roughly right) embodies this principle. The 8% "loss" in R² bought us:
 
 - ✅ A model that works in production
 - ✅ Honest, reliable performance

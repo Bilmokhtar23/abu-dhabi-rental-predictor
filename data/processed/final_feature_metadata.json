@@ -1,0 +1,103 @@
+{
+  "creation_date": "2025-11-24 17:58:31",
+  "dataset": "Abu Dhabi Properties - Final Feature Set",
+  "version": "1.0",
+  "total_features": 14,
+  "numeric_features": [
+    "Beds",
+    "Baths",
+    "Area_in_sqft",
+    "log_area",
+    "property_rank_in_location",
+    "area_deviation_from_location",
+    "location_type_premium",
+    "furnishing_type_premium",
+    "bath_bed_ratio",
+    "area_per_bedroom",
+    "type_room_premium"
+  ],
+  "categorical_features": [
+    "Location",
+    "Type",
+    "Furnishing"
+  ],
+  "all_features": [
+    "Beds",
+    "Baths",
+    "Area_in_sqft",
+    "log_area",
+    "property_rank_in_location",
+    "area_deviation_from_location",
+    "location_type_premium",
+    "furnishing_type_premium",
+    "bath_bed_ratio",
+    "area_per_bedroom",
+    "type_room_premium",
+    "Location",
+    "Type",
+    "Furnishing"
+  ],
+  "feature_count": {
+    "numeric": 11,
+    "categorical": 3,
+    "total": 14
+  },
+  "feature_correlations": {
+    "Beds": 0.7106049516373995,
+    "Baths": 0.7509281776291695,
+    "Area_in_sqft": 0.5604052713399329,
+    "log_area": 0.7126509470355883,
+    "property_rank_in_location": 0.6608377494102899,
+    "area_deviation_from_location": 0.5145655204372036,
+    "location_type_premium": 0.5125773247846102,
+    "furnishing_type_premium": 0.578741763137393,
+    "bath_bed_ratio": 0.41163086185059083,
+    "area_per_bedroom": 0.27994305098732536,
+    "type_room_premium": 0.7001724696993448
+  },
+  "quality_metrics": {
+    "max_feature_correlation": 0.9251399226660788,
+    "samples_per_feature": 1319.0,
+    "train_samples": 18466,
+    "multicollinearity_status": "ACCEPTABLE"
+  },
+  "removed_features": {
+    "data_leakage": [
+      "Rent_per_sqft",
+      "property_value_tier"
+    ],
+    "redundant": [
+      "baths_log",
+      "room_count",
+      "luxury_score",
+      "bed_bath_synergy"
+    ],
+    "polynomials": [
+      "area_squared",
+      "area_cubed",
+      "area_fourth_power",
+      "beds_squared",
+      "beds_cubed",
+      "baths_squared",
+      "baths_cubed",
+      "room_count_squared",
+      "room_count_cubed",
+      "room_count_fourth"
+    ],
+    "noise": [
+      "Age_of_listing_in_days",
+      "room_density"
+    ],
+    "unclear": [
+      "area_efficiency",
+      "area_sq_beds_interaction"
+    ]
+  },
+  "design_principles": [
+    "No data leakage",
+    "Minimal multicollinearity (r < 0.90)",
+    "Interpretable features only",
+    "Production-ready (computable at prediction time)",
+    "Signal over noise (removed r < 0.1 features)"
+  ]
+}

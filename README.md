@@ -28,26 +28,38 @@ This system analyzes over **23,000 properties** in Abu Dhabi to provide accurate
 
 ### Prerequisites
 - Python 3.11+
-- All dependencies from `requirements.txt`
 
 ### 1. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Train the Model
-The trained model files are not included in the repository. Train the production model first:
+### 2. Train the Model (Optional - takes ~2-3 minutes)
+The processed data is included in the repository. Train the production model:
 
 ```bash
 python scripts/train_stacked_ensemble.py
 ```
-This takes ~2-3 minutes and creates the model files needed for predictions. The script will train a stacked ensemble of XGBoost, LightGBM, and CatBoost models, achieving ~94% R² accuracy on test data.
+
+This creates the model files needed for predictions. The script will train a stacked ensemble of XGBoost, LightGBM, and CatBoost models, achieving ~94% R² accuracy on test data.
 
 ### 3. Launch the Web Application
 ```bash
 streamlit run app.py
 ```
 The application will open in your browser at `http://localhost:8501`.
+
+---
+
+## 📊 Data
+
+The repository includes processed datasets for immediate reproducibility:
+
+- **train_set_FINAL.csv**: 15,367 properties for model training
+- **val_set_FINAL.csv**: 3,251 properties for hyperparameter tuning
+- **test_set_FINAL.csv**: 4,663 properties for final evaluation
+
+Data includes 14 engineered features and achieves 93.79% R² with the stacked ensemble.
 
 ---
 

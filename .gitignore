@@ -69,3 +69,7 @@ htmlcov/
 *.tmp
 *.bak
 *.swp
+
+# Data files - EXCLUDE raw data, INCLUDE processed for reproducibility
+data/raw/
+!data/processed/

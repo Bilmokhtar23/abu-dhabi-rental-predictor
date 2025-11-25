@@ -133,12 +133,26 @@ if st.button("🔮 Predict Rental Price", type="primary"):
         input_data['Type'] = property_type
         input_data['Furnishing'] = furnishing
 
-        # Create DataFrame and encode
+        # Create DataFrame with all features
         input_df = pd.DataFrame([input_data])
-        input_df = input_df[feature_cols]
-
+        
+        # Separate numerical and categorical features
+        numerical_cols = [col for col in input_df.columns if col not in ['Location', 'Type', 'Furnishing']]
+        categorical_cols = ['Location', 'Type', 'Furnishing']
+        
+        # Get encoder and encode categorical features
         encoder = model_dict['encoder']
-        input_encoded = encoder.transform(input_df)
+        categorical_encoded = encoder.transform(input_df[categorical_cols])
+        categorical_encoded_df = pd.DataFrame(
+            categorical_encoded, 
+            columns=encoder.get_feature_names_out(categorical_cols)
+        )
+        
+        # Combine numerical and encoded categorical features
+        input_encoded = pd.concat([input_df[numerical_cols], categorical_encoded_df], axis=1)
+        
+        # Ensure features are in the correct order
+        input_encoded = input_encoded[feature_cols]
 
         # Make prediction
         base_models = model_dict['base_models']

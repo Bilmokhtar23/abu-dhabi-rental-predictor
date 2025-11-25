@@ -400,10 +400,11 @@ def main():
         'test_rmse': test_rmse
     }, production_model_path)
     
-    # Save feature columns for app compatibility
+    # Save feature columns for app compatibility (use encoded feature names)
+    encoded_feature_cols = X_train_encoded.columns.tolist()
     feature_cols_path = production_dir / "feature_columns_latest.json"
     with open(feature_cols_path, 'w') as f:
-        json.dump(feature_cols, f, indent=2)
+        json.dump(encoded_feature_cols, f, indent=2)
     
     # Save metadata
     metadata = {
